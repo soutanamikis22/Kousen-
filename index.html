@@ -197,7 +197,7 @@ function drawBase(){
     const r=V.z>150?2.6:1.8;
     for(const k in ST){const a=ST[k];for(let i=0;i<a.length;i+=2){const[x,y]=P(a[i],a[i+1]);if(x<-5||y<-5||x>W+5||y>H+5)continue;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}}}}
   ctx.lineWidth=3;ctx.lineJoin="round";ctx.lineCap="round";ctx.strokeStyle=css("blue");ctx.globalAlpha=.55;
-  trains.forEach(t=>{ctx.beginPath();let f=1;t.stops.forEach(s=>{if(!s.p)return;const[x,y]=P(s.p[0],s.p[1]);f?ctx.moveTo(x,y):ctx.lineTo(x,y);f=0});ctx.stroke()});
+  if(legacy)trains.forEach(t=>{ctx.beginPath();let f=1;t.stops.forEach(s=>{if(!s.p)return;const[x,y]=P(s.p[0],s.p[1]);f?ctx.moveTo(x,y):ctx.lineTo(x,y);f=0});ctx.stroke()});
   ctx.globalAlpha=1;
   const seen={};
   trains.forEach((t,ti)=>t.stops.forEach((s,si)=>{
@@ -266,7 +266,7 @@ function renderSheet(){
 function setSpot(mx,my){
   let best=null;
   trains.forEach((t,ti)=>{const L=t.stops.filter(s=>s.p);for(let i=0;i<L.length-1;i++){const a=L[i],b=L[i+1],A=P(a.p[0],a.p[1]),B=P(b.p[0],b.p[1]),dx=B[0]-A[0],dy=B[1]-A[1],l2=dx*dx+dy*dy||1,f=Math.max(0,Math.min(1,((mx-A[0])*dx+(my-A[1])*dy)/l2)),d=Math.hypot(A[0]+dx*f-mx,A[1]+dy*f-my);if(!best||d<best.d)best={d,a,b,f,ti}}});
-  if(best&&best.d<60){const{a,b,f}=best,p=[a.p[0]+(b.p[0]-a.p[0])*f,a.p[1]+(b.p[1]-a.p[1])*f],ta=a.dep??a.arr;spot={p,h:bear(a.p,b.p),t0:ta+(b.arr-ta)*f,label:a.name+"〜"+b.name,seg:[a,b,ta]}}
+  if(best&&best.d<350){const{a,b,f}=best,p=[a.p[0]+(b.p[0]-a.p[0])*f,a.p[1]+(b.p[1]-a.p[1])*f],ta=a.dep??a.arr;spot={p,h:bear(a.p,b.p),t0:ta+(b.arr-ta)*f,label:a.name+"〜"+b.name,seg:[a,b,ta]}}
   else{let lon,lat;if(legacy){lon=((mx-W/2)/V.z+V.cx)/KX;lat=-((my-H/2)/V.z+V.cy)}else{const q=map.unproject([mx,my]);lon=q.lng;lat=q.lat};spot={p:[lat,lon],h:null,t0:tAbs||trains[0].stops[0].arr,label:"地点"}}
   sel=null;tAbs=Math.round(spot.t0);draw();renderSheet();snapTrack(spot);
 }
