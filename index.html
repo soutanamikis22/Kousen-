@@ -263,10 +263,11 @@ function renderSheet(){
   const seg=$("seg");if(seg)seg.onclick=e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;analyze();renderAll()};
   const ch=$("chips");if(ch)ch.onclick=e=>{const b=e.target.closest("button");if(!b)return;const[a,c]=b.dataset.k.split("-").map(Number);pick(a,c,true)};
 }
+function tapLL(mx,my){if(legacy)return[-((my-H/2)/V.z+V.cy),((mx-W/2)/V.z+V.cx)/KX];const q=map.unproject([mx,my]);return[q.lat,q.lng]}
 function setSpot(mx,my){
   let best=null;
   trains.forEach((t,ti)=>{const L=t.stops.filter(s=>s.p);for(let i=0;i<L.length-1;i++){const a=L[i],b=L[i+1],A=P(a.p[0],a.p[1]),B=P(b.p[0],b.p[1]),dx=B[0]-A[0],dy=B[1]-A[1],l2=dx*dx+dy*dy||1,f=Math.max(0,Math.min(1,((mx-A[0])*dx+(my-A[1])*dy)/l2)),d=Math.hypot(A[0]+dx*f-mx,A[1]+dy*f-my);if(!best||d<best.d)best={d,a,b,f,ti}}});
-  if(best&&best.d<350){const{a,b,f}=best,p=[a.p[0]+(b.p[0]-a.p[0])*f,a.p[1]+(b.p[1]-a.p[1])*f],ta=a.dep??a.arr;spot={p,h:bear(a.p,b.p),t0:ta+(b.arr-ta)*f,label:a.name+"〜"+b.name,seg:[a,b,ta]}}
+  if(best&&best.d<350){const{a,b,f}=best,p=tapLL(mx,my),ta=a.dep??a.arr;spot={p,h:bear(a.p,b.p),t0:ta+(b.arr-ta)*f,label:a.name+"〜"+b.name,seg:[a,b,ta]}}
   else{let lon,lat;if(legacy){lon=((mx-W/2)/V.z+V.cx)/KX;lat=-((my-H/2)/V.z+V.cy)}else{const q=map.unproject([mx,my]);lon=q.lng;lat=q.lat};spot={p:[lat,lon],h:null,t0:tAbs||trains[0].stops[0].arr,label:"地点"}}
   sel=null;tAbs=Math.round(spot.t0);draw();renderSheet();snapTrack(spot);
 }
